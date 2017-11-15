@@ -26,4 +26,44 @@
             }
         }
 
+Function Add-mimtypes  
+
+    If ($xmlinput.Configuration.PowerBI.MIMEType.Configure -eq $true)
+    {
+        # Add the PBIX and PBIT MIME type to each web app so PowerBI can be directly viewed/opened without saving locally first
+        # More granular and generally preferable to setting the whole web app to "Permissive" file handling
+        $mimeType = "application/pbix"
+        $mimeType2 = "application/pbit"
+        Write-Host -ForegroundColor White " - Adding PowerBI MIME type `"$mimeType`" web apps..."
+        Load-SharePoint-PowerShell
+
+        ForEach ($webAppConfig in $xmlinput.Configuration.WebApplications.WebApplication)
+        {
+            $webAppUrl = $(($webAppConfig.url).TrimEnd("/"))+":"+$($webAppConfig.Port)
+            $webApp = Get-SPWebApplication -Identity $webAppUrl
+            If ($webApp.AllowedInlineDownloadedMimeTypes -notcontains $mimeType)
+            {
+                Write-Host -ForegroundColor White "  - "$webAppUrl": Adding "`"$mimeType"`"..." -NoNewline
+                $webApp.AllowedInlineDownloadedMimeTypes.Add($mimeType)
+                $webApp.Update()
+                Write-Host -ForegroundColor White "OK."
+            }
+            Else
+            {
+                Write-Host -ForegroundColor White "  - "$webAppUrl": "`"$mimeType"`" already added."
+            }
+            If ($webApp.AllowedInlineDownloadedMimeTypes -notcontains $mimeType2)
+            {
+                Write-Host -ForegroundColor White "  - "$webAppUrl": Adding "`"$mimeType2"`"..." -NoNewline
+                $webApp.AllowedInlineDownloadedMimeTypes.Add($mimeType2)
+                $webApp.Update()
+                Write-Host -ForegroundColor White "OK."
+            }
+            Else
+            {
+                Write-Host -ForegroundColor White "  - "$webAppUrl": "`"$mimeType2"`" already added."
+            }
+
+}
+
 
