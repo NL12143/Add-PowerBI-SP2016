@@ -1,3 +1,4 @@
+
 6485 in AutoSPInstallerFunctions.ps1
 
         # Perform the rest of the DOCICON.XML modifications to allow PDF edit etc., and write out the new DOCICON.XML file
